@@ -1,0 +1,31 @@
+/*@font-face {
+  font-family: "symmingliu";
+  src: url('resource://bbsfox/symmingliu.woff');
+}*/
+
+#BBSWindow {
+  position:absolute;
+  width:0px;
+  height:0px;
+  top:0px;
+  left:0px;
+  overflow:hidden;
+  z-index:1;
+}
+
+.main {
+  font-family: MingLiu, monospace;
+  margin-top:0px;
+  margin-left:0px;
+  margin-right:0px;
+  margin-bottom:0px;
+}
+
+.main > span, 
+#mainContainer > span{
+  display:block;
+  color:#C0C0C0;
+  white-space: pre;
+}
+
+

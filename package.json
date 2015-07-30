@@ -1,0 +1,9 @@
+{
+  "name": "Robot View",
+  "description": "Robot debugger for OpenPTT", 
+  "version": "0.0.1",
+  "main": "www/zh-tw.html",
+  "window": {
+    "icon": "www/icon/logo.png"
+  }
+}
