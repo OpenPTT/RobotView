@@ -1,7 +1,7 @@
 define([
-'core/uao/uao_conv',
-'core/lib/socket'
-], function (uaoConv, Socket) {
+    'core/uao/uao_conv',
+    'core/utils/stringUtil',
+    'core/lib/socket'], function (uaoConv, strUtil, Socket) {
 
 // Handle Telnet Connections according to RFC 854
 // Telnet commands
@@ -249,7 +249,7 @@ TelnetProtocol.prototype={
         if(extbuf) return s;
         if(s)
         {
-          s = this.bbsCore.strUtil.ansiHalfColorConv(s);
+          s = strUtil.ansiHalfColorConv(s);
           this.send(s);
         }
     },
