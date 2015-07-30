@@ -25,6 +25,23 @@ function TermView(bbsCore, buf) {
   }
 
   this.symtable = symboltable;
+  
+  //init view - start
+  //this.dp = new DOMParser();
+  this.BBSWin = document.getElementById('BBSWindow');
+  var colCount = 80;
+  var rowCount = 24;
+  this.htmlRowStrArray = [];
+  var mainDiv = document.createElement('div');
+  mainDiv.setAttribute('class', 'main');
+  for (var i = 0; i < rowCount; ++i) {
+    this.htmlRowStrArray.push('<span type="bbsrow" srow="'+i+'"></span>');
+  }
+  mainDiv.innerHTML = '<div id="mainContainer">'+this.htmlRowStrArray.join('')+'</div>';
+  this.BBSWin.appendChild(mainDiv);
+  this.mainDisplay = mainDiv;
+  this.mainContainer = document.getElementById('mainContainer');
+  //init view - end
 }
 
 TermView.prototype = {
@@ -204,7 +221,96 @@ TermView.prototype = {
       return '&amp;';
     else
       return inputChar;
+  },
+  //////////////////////////////////////////
+  update: function(force) {
+
+    //var start = new Date().getTime();
+    var cols = this.buf.cols;
+    var rows = this.buf.rows;
+    var lineChangeds = this.buf.lineChangeds;
+    var lineChangedCount = 0;
+    var changedLineHtmlStr = '';
+    var changedLineHtmlStrs = [];
+    var changedRows = [];
+    var fullUpdateRowThreshold = 3;
+
+    var lines = this.buf.lines;
+    var outhtmls = this.buf.outputhtmls;
+    var anylineUpdate = false;
+    for (var row = 0; row < rows; ++row) {
+      var chh = this.chh;
+      this.curRow = row;
+      // resets color
+      this.setCurColorStyle(this.deffg, this.defbg, false);
+      this.defbg = 0;
+      var line = lines[row];
+      var outhtml = outhtmls[row];
+      var lineChanged = lineChangeds[row];
+      if (lineChanged === false && !force)
+        continue;
+      var lineUpdated = false;
+      var chw = this.chw;
+      //this.doHighlightOnCurRow = (this.buf.highlightCursor && this.buf.nowHighlight != -1 && this.buf.nowHighlight == row);
+
+      for (this.curCol = 0; this.curCol < cols; ++this.curCol) {
+        // always check all because it's hard to know about openSpan when jump update
+        this.determineAndSetHtmlForCol(line, outhtml);
+        lineUpdated = true;
+      }
+      // after all cols, close the span if open
+      outhtml[this.curCol-1].addHtml(this.closeSpanIfIsOpen());
+
+      if (lineUpdated) {
+        lineUpdated = false;
+        var tmp = [];
+
+        //if (this.doHighlightOnCurRow) 
+        //  tmp.push('<span type="highlight" class="b'+this.defbg+'" srow="'+row+'">');
+
+        for (var j = 0; j < cols; ++j)
+          tmp.push(outhtml[j].getHtml());
+
+        //if (this.doHighlightOnCurRow)
+        //  tmp.push('</span>');
+
+        changedLineHtmlStr = tmp.join('');
+        if (changedLineHtmlStrs.length < fullUpdateRowThreshold) { // only store up to the threshold
+          changedLineHtmlStrs.push(changedLineHtmlStr);
+          changedRows.push(row);
+        }
+        this.htmlRowStrArray[row] = '<span type="bbsrow" srow="'+row+'">' + changedLineHtmlStr + '</span>';
+        anylineUpdate = true;
+        lineChangeds[row] = false;
+        lineChangedCount += 1;
+      }
+    }
+
+    if (anylineUpdate) {
+      if (lineChangedCount > fullUpdateRowThreshold) {
+        if (!this.useEasyReadingMode) {
+          this.mainContainer.innerHTML = this.htmlRowStrArray.join('');
+          this.buf.prevPageState = this.buf.pageState;
+        } else {
+          this.populateEasyReadingPage();
+        }
+      } else {
+        if (this.useEasyReadingMode && this.buf.startedEasyReading && this.buf.easyReadingShowReplyText) {
+          this.updateEasyReadingReplyTextWithHtmlStr(changedLineHtmlStrs[changedLineHtmlStrs.length-1]);
+        } else if (this.useEasyReadingMode && this.buf.startedEasyReading && this.buf.easyReadingShowPushInitText) {
+          this.updateEasyReadingPushInitTextWithHtmlStr(changedLineHtmlStrs[changedLineHtmlStrs.length-1]);
+        } else {
+          for (var i = 0; i < changedRows.length; ++i) {
+            this.mainContainer.childNodes[changedRows[i]].innerHTML = changedLineHtmlStrs[i];
+          }
+        }
+        this.buf.prevPageState = this.buf.pageState;
+      }
+    }
+    //var time = new Date().getTime() - start;
+    //console.log(time);
   }
+
 
 };
 

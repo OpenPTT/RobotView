@@ -1,4 +1,7 @@
-define(['core/uao/uao_conv'], function (uaoConv) {
+define([
+'core/uao/uao_conv',
+'core/lib/socket'
+], function (uaoConv, Socket) {
 
 // Handle Telnet Connections according to RFC 854
 // Telnet commands

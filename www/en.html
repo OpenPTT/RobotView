@@ -36,6 +36,7 @@
     <link rel="stylesheet" type="text/css" href="css/boardList.css">
     <link rel="stylesheet" type="text/css" href="css/articleList.css">
     <link rel="stylesheet" type="text/css" href="css/color.css">
+    <link rel="stylesheet" type="text/css" href="css/bbs.css">
 
     <!-- CSP support mode (required for Windows Universal apps) -->
     <link rel="stylesheet" href="lib/angular/angular-csp.css" />
@@ -47,7 +48,10 @@
     <script data-main="js/main" src="lib/requirejs/require.js"></script>
   </head>
 
-  <body>
+  <body style="visibility: hidden">
+  	<div id='BBSWindow' style="position:absolute;left:30%;background:#000;width:70%;height:100%;">
+    </div>
+    <div style="position:absolute;left:0px;width:30%;height:100%;">
     <ons-modal var="loginModal">
       <div class="spinner">
         <div class="rect1"></div>
@@ -66,9 +70,12 @@
         </ons-toolbar>
 
         <div class="login-form">
-
-          <input type="text" class="text-input--underbar" placeholder="Username" ng-model="username">
-          <input type="password" class="text-input--underbar" placeholder="Password" ng-model="password">
+          <div class="form-row">
+            <input type="text" class="text-input--underbar width-full" placeholder="Username" ng-model="username">
+          </div>
+          <div class="form-row">
+            <input type="password" class="text-input--underbar width-full" placeholder="Password" ng-model="password">
+          </div>
           <ons-list class="remember-me">
             <ons-list-item modifier="tappable">
               <label class="checkbox checkbox--list-item">
@@ -399,5 +406,6 @@
         <br>
       </ons-page>
     </ons-template>
+    </div>
   </body>
 </html>

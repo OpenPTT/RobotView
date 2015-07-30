@@ -19,12 +19,14 @@ require.config({
   window.app = {
       bbsCore: null
   };
-
+  
   function onDeviceReady() {
     // Handle the Cordova pause and resume events
     //document.addEventListener( 'pause', onPause.bind(this), false );
     //document.addEventListener( 'resume', onResume.bind(this), false );
-    require([
+    window.requireJS = window.require;
+    window.require = window.requireNode;
+    requireJS([
       'frontend/appController',
       'core/sites/ptt',
       '../lib/domReady!'
@@ -56,4 +58,6 @@ require.config({
   document.addEventListener('deviceready', onDeviceReady.bind(this), false);
   //window.addEventListener('load', onLoad.bind(this), false);
   //window.addEventListener('unload', onUnload.bind(this), false);
+  onDeviceReady();
+  
 }) ();

@@ -146,8 +146,11 @@ define(function(require, exports, module) {
 
     apply: function(subject, obj) {
       this.applyDataEvent(subject, obj);
-    }
+    },
 
+    updateView: function(force) {
+      this.view.update(force);
+    }
   };
 
   return BBSCore;

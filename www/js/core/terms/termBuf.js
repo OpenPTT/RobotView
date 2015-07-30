@@ -39,7 +39,7 @@ function TermBuf(bbsCore, cols, rows) {
     this.linesX=new Array(0);
     this.linesY=new Array(0);
 
-    //this.outputhtmls = new Array(rows);
+    this.outputhtmls = new Array(rows);
     this.lineChangeds = new Array(rows);
 
     this.openThreadUrl = 0;
@@ -49,14 +49,14 @@ function TermBuf(bbsCore, cols, rows) {
 
     while(--rows >= 0) {
         var line=new Array(cols);
-        //var outputhtml=new Array(cols);
+        var outputhtml=new Array(cols);
         var c=cols;
         while(--c >= 0) {
             line[c]=new TermChar(' ');
-            //outputhtml[c]= new TermHtml();
+            outputhtml[c]= new TermHtml();
         }
         this.lines[rows]=line;
-        //this.outputhtmls[rows]=outputhtml;
+        this.outputhtmls[rows]=outputhtml;
     }
     this.BBSWin = document.getElementById('BBSWindow');
 }
@@ -812,11 +812,11 @@ TermBuf.prototype={
 
       if(this.changed){ // content changed
         //if(this.prefs.useMouseBrowsing || this.prefs.testPttThread || this.prefs.aidAction!=0){
-          this.SetPageState();
+        //  this.SetPageState();
           //this.resetMousePos();
         //}
         this.updateCharAttr();
-        if(this.view) {
+        if(this.bbsCore) {
           /*
           //open therad URL, this code only for desktop browser.
           if(this.openThreadUrl == 3)
@@ -827,12 +827,12 @@ TermBuf.prototype={
           }
           else
           */
-            this.view.update(false);
+            this.bbsCore.updateView(false);
         }
         this.changed=false;
         this.downPostChanged=true;
       }
-
+      /*
       if(this.posChanged) { // cursor pos changed
         if(this.view) {
           this.view.updateCursorPos();
@@ -851,6 +851,7 @@ TermBuf.prototype={
           allBlinkSpan[i].parentNode.setAttribute("class", c);
         }
       }
+      */
     },
 
     getText: function(row, colStart, colEnd, color, isutf8, reset) {
