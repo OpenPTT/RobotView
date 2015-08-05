@@ -1,7 +1,9 @@
+// define libraries and non-amd projects
 require.config({
   paths: {
     angular: '../lib/angular/angular',
     "angular-sanitize": '../lib/angular/angular-sanitize',
+    "angular-gettext": '../lib/angular/angular-gettext',
     onsen: '../lib/onsen/js/onsenui'
   },
   shim: {
@@ -9,7 +11,9 @@ require.config({
       exports: "angular"
     },
     "angular-sanitize": ["angular"],
-    "onsen": ["angular"]
+    "angular-gettext": ["angular"],
+    "onsen": ["angular"],
+    'frontend/translations': ['frontend/app']
   }
 });
 
@@ -19,22 +23,23 @@ require.config({
   window.app = {
       bbsCore: null
   };
-  
+
   function onDeviceReady() {
-    // Handle the Cordova pause and resume events
+    // TODO: Handle the Cordova pause and resume events
     //document.addEventListener( 'pause', onPause.bind(this), false );
     //document.addEventListener( 'resume', onResume.bind(this), false );
     window.requireJS = window.require;
     window.require = window.requireNode;
+    // main entrypoint of our app
     requireJS([
-      'frontend/appController',
-      'core/sites/ptt',
+      'frontend/app',
+      'frontend/translations',
+      'sites/ptt',
       '../lib/domReady!'
       ], function () {
-
-      // TODO: replace visibility into a loading indicator
-      document.body.style.visibility = "";
-      angular.bootstrap(document, ['app']);
+        // TODO: replace visibility into a loading indicator
+        document.body.style.visibility = "";
+        angular.bootstrap(document, ['app']);
 
     });
   }
@@ -59,5 +64,4 @@ require.config({
   //window.addEventListener('load', onLoad.bind(this), false);
   //window.addEventListener('unload', onUnload.bind(this), false);
   onDeviceReady();
-  
 }) ();

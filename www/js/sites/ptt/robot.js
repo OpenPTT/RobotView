@@ -1,9 +1,9 @@
 define(function(require, exports, module) {
-  var StringParserPtt = require('core/sites/ptt/stringParser'),
-   NewArticlePtt = require('core/sites/ptt/objects/newArticle'),
-   BoardPtt = require('core/sites/ptt/objects/board'),
-   ClassPtt = require('core/sites/ptt/objects/class'),
-   MailBoxPtt = require('core/sites/ptt/objects/mailBox'),
+  var StringParserPtt = require('sites/ptt/stringParser'),
+   NewArticlePtt = require('sites/ptt/objects/newArticle'),
+   BoardPtt = require('sites/ptt/objects/board'),
+   ClassPtt = require('sites/ptt/objects/class'),
+   MailBoxPtt = require('sites/ptt/objects/mailBox'),
    siteManager = require('core/utils/siteManager'),
    robotCmd = require('core/utils/robotCmd'),
    strUtil = require('core/utils/stringUtil');
@@ -372,7 +372,7 @@ RobotPtt.prototype={
             task = this.taskList[0];
             task.callback(articleList);
             this.taskStage = 4;
-            this.bbsCore.conn.send(robotCmd.End.repeat(2) + robotCmd.Up.repeat(this.highlightCount) + robotCmd.Enter); //end, up * n-1, enter
+            this.bbsCore.conn.send(robotCmd.End.repeat(2) + robotCmd.Up.repeat(this.highlightCount-1) + robotCmd.Enter); //end, up * n-1, enter
           } else {
             //get post class
             this.bbsCore.conn.send(robotCmd.CtrlP); //ctrl+p
@@ -478,7 +478,7 @@ RobotPtt.prototype={
           //return;
         } else {
           this.taskStage = 4;
-          this.bbsCore.conn.send(robotCmd.Left + robotCmd.End.repeat(2) + robotCmd.Up.repeat(this.highlightCount) + robotCmd.Enter); //left,end,end,up*n,enter
+          this.bbsCore.conn.send(robotCmd.Left + robotCmd.End.repeat(2) + robotCmd.Up.repeat(this.highlightCount-1) + robotCmd.Enter); //left,end,end,up*n,enter
         }
       }
     } else if(this.taskStage == 6) {

@@ -1,58 +1,9 @@
-define(['core/bbsCore', 'angular', 'angular-sanitize', 'onsen'], function (BBSCore) {
+define(['core/bbsCore'], function (BBSCore) {
 
-var app = angular.module('app', ['onsen', 'ngSanitize']);
-
-app.controller('LoginController', function ($scope, $window) {
-  $scope.init = function() {
-    if(!$window.app.bbsCore)
-      $window.app.bbsCore = new BBSCore();
-    $scope.bbsCore = $window.app.bbsCore;
-    $scope.errorMessage = '';
-    $scope.sitename = 'PTT';
-    $scope.filterResult = [];
-
-    $scope.username = $scope.bbsCore.prefs.username;
-    $scope.password = $scope.bbsCore.prefs.password;
-    $scope.savePassword = $scope.bbsCore.prefs.savePassword;
-
-    $scope.bbsCore.regConnectionStatusEvent($scope.updateMainUI);
-  };
-
-  $scope.login = function () {
-    console.log('login');
-    $scope.bbsCore.login($scope.sitename, $scope.username, $scope.password, $scope.savePassword);
-  };
-
-  $scope.updateMainUI = function (status, message) {
-    switch (status){
-      case "logout":
-        mainNavigator.popPage('mainUI.html');
-        $scope.errorMessage = '';
-        break;
-      case "login-success":
-        mainNavigator.pushPage('mainUI.html');
-        loginModal.hide();
-        $scope.errorMessage = '';
-        break;
-      case "login-failed":
-        //show error message
-        loginModal.hide();
-        $scope.errorMessage = message;
-        $scope.$apply();
-      case "disconnect":
-        break;
-      default:
-        break;
-    }
-  };
-
-});
-
-app.controller('AppController', ['$scope', '$window', '$q', '$sce', function ($scope, $window, $q, $sce) {
+var AppController = ['$scope', '$window', '$q', '$sce', 'gettextCatalog', function ($scope, $window, $q, $sce, gettextCatalog) {
   $scope.bbsCore = null;
   $scope.nickname = '';
   $scope.currentBoardName = '';
-
 
   $scope.boardListStack = [];
   $scope.currentBoard = {};
@@ -65,6 +16,9 @@ app.controller('AppController', ['$scope', '$window', '$q', '$sce', function ($s
   $scope.currentArticle = {};
   $scope.currentArticle.lines = [];
   $scope.rootMenu = 'mainUI.html';
+  // var gg = gettextCatalog;
+  // console.log("here");
+  // console.log(gg);
 
   $scope.init = function() {
     if(!$window.app.bbsCore)
@@ -75,6 +29,10 @@ app.controller('AppController', ['$scope', '$window', '$q', '$sce', function ($s
     $scope.favorites = $scope.bbsCore.getFavorite();
     $scope.classBoards = $scope.bbsCore.getClassBoardDirectories();
     $scope.mailBox = $scope.bbsCore.getMailBox();
+    
+    $scope.username = $scope.bbsCore.prefs.username;
+    $scope.deleteDuplicate = $scope.bbsCore.prefs.deleteDuplicate;
+    $scope.savePassword = $scope.bbsCore.prefs.savePassword;
   };
 
   $scope.applyDataEvent = function(subject, obj) {
@@ -93,13 +51,15 @@ app.controller('AppController', ['$scope', '$window', '$q', '$sce', function ($s
   $scope.enterBoard = function (board) {
     if(!board.enter())
       return;
-
+    $scope.boardName_translate = '';
     if(board.isDirectory) {
       if(board.boardName == 'favorite') {
+        $scope.boardName_translate = gettextCatalog.getString("boardName_translate");
         $scope.boardListStack.push($scope.favorites);
         $scope.currentDirectory = $scope.favorites;
       } else {
         //$scope.boardList = board.subBoardList;
+        $scope.boardName_translate = board.boardName;
         if($scope.rootMenu == 'mainUI.html')
           homeNavigator.pushPage('boardList.html');
         else if($scope.rootMenu == 'favorite.html')
@@ -132,6 +92,7 @@ app.controller('AppController', ['$scope', '$window', '$q', '$sce', function ($s
   };
 
   $scope.enterClassBoard = function () {
+    $scope.boardListStack = [];
     homeNavigator.pushPage('classBoard.html');
   };
 
@@ -173,6 +134,7 @@ app.controller('AppController', ['$scope', '$window', '$q', '$sce', function ($s
   };
 
   $scope.createNewArticle = function () {
+    //console.log(JSON.stringify($scope.currentBoard.articleClassList));
     $scope.newArticle = $scope.bbsCore.createNewArticle($scope.currentBoard);
     if($scope.rootMenu == 'mainUI.html')
       homeNavigator.pushPage('postArticle.html');
@@ -202,11 +164,12 @@ app.controller('AppController', ['$scope', '$window', '$q', '$sce', function ($s
   };
 
   $scope.switchTab = function (tab) {
-    $scope.rootMenu=tab;
+    $scope.rootMenu = tab;
     switch (tab){
       case "mainUI.html":
         break;
       case "favorite.html":
+        $scope.boardListStack = [];
         $scope.enterBoard($scope.favorites);
         break;
       case "settings.html":
@@ -248,8 +211,8 @@ app.controller('AppController', ['$scope', '$window', '$q', '$sce', function ($s
     }
   };
 
-}]);
+}];
 
-return app;
+return AppController;
 
 });
